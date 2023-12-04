@@ -17,8 +17,8 @@ public class Practice {
 
     public static void main(String[] args) {
         glfwInit();
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
         window = glfwCreateWindow(1280, 720, "Test", NULL, NULL);
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
@@ -36,51 +36,21 @@ public class Practice {
 
         BufferedImage ken;
         try {
-            ken = ImageIO.read(new File("./res/01-12-23_1329.jpg"));
+           ken = ImageIO.read(new File("./res/01-12-23_1329.jpg"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        int[] pixels = new int[ken.getWidth()*ken.getHeight()*4];
-        ken.getRGB(0, 0, ken.getWidth(), ken.getHeight(), pixels, 0, ken.getWidth());
-        ByteBuffer buffer = BufferUtils.createByteBuffer(ken.getWidth()*ken.getHeight()*4);
-
-        for(int y = 0; y<ken.getHeight(); y++){
-            for(int x = 0; x<ken.getWidth(); x++){
-                int pixel = pixels[y*ken.getWidth()+x];
-                buffer.put((byte) ((pixel >> 16) & 0xFF));
-                buffer.put((byte) ((pixel >> 8) & 0xFF)); //Credit to user Krythic for these values
-                buffer.put((byte) (pixel & 0xFF));
-                buffer.put((byte) ((pixel >> 24) & 0xFF));
+        for(int i = 0; i<10; i++){
+            for(int r =0; r<10; r++){
+                GraphicsObject.addSprite(new Sprite(i*128,r*72,128,72, ken));
             }
         }
-        buffer.flip();
-        int texture = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, texture);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, ken.getWidth(), ken.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
         while(!userclosed.get()){
 
             glClear(GL_COLOR_BUFFER_BIT);
+            GraphicsObject.draw();
 
-            glBindTexture(GL_TEXTURE_2D, texture);
-            glBegin(GL_QUADS);
-
-            glTexCoord2f(1,1);
-            glVertex2d(-0.5,-0.5);
-
-            glTexCoord2f(0,1);
-            glVertex2d(0.5,-0.5);
-
-            glTexCoord2f(0,0);
-            glVertex2d(0.5, 0.5);
-
-            glTexCoord2f(1,0);
-            glVertex2d(-0.5, 0.5);
-
-            glEnd();
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
