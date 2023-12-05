@@ -2,11 +2,13 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -14,6 +16,9 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 public class Practice {
     private static long window;
+
+    private static double mouseX;
+    private static double mouseY;
 
     public static void main(String[] args) {
         glfwInit();
@@ -26,11 +31,11 @@ public class Practice {
         glViewport(0, 0, 1280,720);
         glfwShowWindow(window);
 
-        AtomicBoolean userclosed = new AtomicBoolean(false);
+        AtomicBoolean userClosed = new AtomicBoolean(false);
 
         glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
-                userclosed.set(true);
+                userClosed.set(true);
             }
         });
 
@@ -40,19 +45,27 @@ public class Practice {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        for(int i = 0; i<10; i++){
+        for(int i = 0; i<100; i++){
             for(int r =0; r<10; r++){
-                GraphicsObject.addSprite(new Sprite(i*128,r*72,128,72, ken));
+                GraphicsObject.addSprite(new Sprite(i*12,r*72,12,72, ken));
             }
         }
 
-        while(!userclosed.get()){
+        while(!userClosed.get()){
 
             glClear(GL_COLOR_BUFFER_BIT);
             GraphicsObject.draw();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
+            getMousey(window);
         }
+    }
+    public static void getMousey(long w){
+        double[] x = new double[1];
+        double[] y = new double[1];
+        glfwGetCursorPos(w, x, y);
+        mouseX = x[0];
+        mouseY = y[0];
     }
 }
