@@ -73,4 +73,7 @@ public class GraphicsObject {
     public static void addSprite(Sprite sp){
         sprites.add(sp);
     }
+    public static void deleteSprite(Sprite sp){
+        sprites.remove(sp);
+    }
 }

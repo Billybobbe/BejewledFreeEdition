@@ -15,10 +15,12 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 public class Practice {
+    public static BufferedImage ken;
     private static long window;
 
     private static double mouseX;
     private static double mouseY;
+    private static Board b;
 
     public static void main(String[] args) {
         glfwInit();
@@ -37,16 +39,16 @@ public class Practice {
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
                 userClosed.set(true);
             }
+            if(key == GLFW_KEY_1 && action == GLFW_RELEASE){
+                b.randomDelete();
+            }
         });
 
-        BufferedImage ken;
-        try {
-           ken = ImageIO.read(new File("./res/01-12-23_1329.jpg"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        Board b  = new Board();
+
+
+        b  = new Board();
         b.print();
+        GameHandler g = new GameHandler(b);
 
         while(!userClosed.get()){
 
@@ -55,6 +57,9 @@ public class Practice {
 
             glfwSwapBuffers(window);
             glfwPollEvents();
+            g.update();
+            b.update();
+            b.print();
             getMousey(window);
         }
     }

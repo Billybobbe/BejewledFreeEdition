@@ -22,26 +22,19 @@ public class Board {
 
     "p" = supernova gem
      */
-    enum Gem{
-        B, B_F, B_L,
-        R, R_F, R_L,
-        O, O_F, O_L,
-        G, G_F, G_L,
-        Y, Y_F, Y_L,
-        S
-    }
+
 
 
     private Gem[][] board;
     public Board(){
-        board = new Gem[8][8];
+        board = new Gem[8][9];
         fillBoard();
     }
     private void fillBoard(){
         while(true){
             for(int x = 0; x<board.length; x++){
                 for(int y = 0; y<board[0].length; y++){
-                    board[x][y] = genGem();
+                   board[x][y] = genGem();
                 }
             }
             if(!checkBoardForMatches()){
@@ -50,19 +43,21 @@ public class Board {
         }
     }
 
+
+
     private Gem genGem(){
         int random = (int)(Math.random()*5);
         switch(random){
             case 0:
-                return Gem.R;
+                return new Gem(Gem.Type.R);
             case 1:
-                return Gem.G;
+                return new Gem(Gem.Type.G);
             case 2:
-                return Gem.B;
+                return new Gem(Gem.Type.B);
             case 3:
-                return Gem.Y;
+                return new Gem(Gem.Type.O);
             default:
-                return Gem.O;
+                return new Gem(Gem.Type.Y);
         }
     }
     private boolean checkBoardForMatches(){
@@ -107,37 +102,75 @@ public class Board {
 
     }
     private boolean compareGem(Gem g1, Gem g2){
-        return switch(g1){
+        return switch(g1.type){
             case B:
             case B_F:
             case B_L:
-                yield (g2 == Gem.B || g2 == Gem.B_F || g2 == Gem.B_L);
+                yield (g2.type == Gem.Type.B || g2.type == Gem.Type.B_F || g2.type == Gem.Type.B_L);
             case G:
             case G_F:
             case G_L:
-                yield (g2 == Gem.G || g2 == Gem.G_F || g2 == Gem.G_L);
+                yield (g2.type == Gem.Type.G || g2.type == Gem.Type.G_F || g2.type == Gem.Type.G_L);
             case R:
             case R_F:
             case R_L:
-                yield(g2 == Gem.R || g2 == Gem.R_F || g2 == Gem.R_L);
+                yield(g2.type == Gem.Type.R || g2.type == Gem.Type.R_F || g2.type == Gem.Type.R_L);
             case O:
             case O_F:
             case O_L:
-                yield(g2 == Gem.O || g2 == Gem.O_F || g2 == Gem.O_L);
+                yield(g2.type == Gem.Type.O || g2.type == Gem.Type.O_F || g2.type == Gem.Type.O_L);
             case Y:
             case Y_F:
             case Y_L:
-                yield(g2 == Gem.Y || g2 == Gem.Y_F || g2 == Gem.Y_L);
+                yield(g2.type == Gem.Type.Y || g2.type == Gem.Type.Y_F || g2.type == Gem.Type.Y_L);
             case S:
                 yield false;
         };
     }
-    public void print(){
+    private void fall(){
         for(int x = 0; x<board.length; x++){
-            for(int y = 0; y<board[0].length; y++){
-                System.out.print(board[x][y] + " ");
+            for(int y = board[0].length-2; y>=0; y--){
+                if(board[x][y+1] == null && board[x][y]!= null){
+                    Gem temp = board[x][y];
+                    board[x][y] = board[x][y+1];
+                    board[x][y+1] = temp;
+                    temp.shiftY += 1;
+                }
+            }
+        }
+    }
+    public void randomDelete(){
+        int randomx = (int)(Math.random()*8);
+        int randomy = (int)(Math.random()*8);
+        board[randomx][randomy] = null;
+    }
+    public void print(){
+        System.out.println();
+        for(int y = 0; y<board[0].length; y++){
+            for(int x = 0; x<board.length; x++){
+                if(board[x][y]!=null){
+                    System.out.print(board[x][y].type + " ");
+                }
+                else{
+                    System.out.print("*" + " ");
+                }
             }
             System.out.println();
         }
+    }
+    public Gem[][] getBoard(){
+        return board;
+    }
+    private void fillTopRow(){
+        for(int x = 0; x<board.length; x++){
+            if(board[x][0] == null){
+                board[x][0] = genGem();
+            }
+        }
+    }
+
+    public void update(){
+        fillTopRow();
+        fall();
     }
 }
