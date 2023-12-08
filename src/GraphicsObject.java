@@ -1,4 +1,5 @@
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL15;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;

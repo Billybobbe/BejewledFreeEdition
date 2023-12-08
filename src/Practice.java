@@ -45,11 +45,8 @@ public class Practice {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        for(int i = 0; i<100; i++){
-            for(int r =0; r<10; r++){
-                GraphicsObject.addSprite(new Sprite(i*12,r*72,12,72, ken));
-            }
-        }
+        Board b  = new Board();
+        b.print();
 
         while(!userClosed.get()){
 
@@ -66,6 +63,6 @@ public class Practice {
         double[] y = new double[1];
         glfwGetCursorPos(w, x, y);
         mouseX = x[0];
-        mouseY = y[0];
+        mouseY = 720-y[0];
     }
 }
