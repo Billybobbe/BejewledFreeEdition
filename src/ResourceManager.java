@@ -49,4 +49,22 @@ public class ResourceManager {
             throw new RuntimeException(e);
         }
     };
+    public static int FLAME_EFFECT;
+
+    static {
+        try {
+            FLAME_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/flame.png")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    };
+    public static int LIGHTNING_EFFECT;
+
+    static {
+        try {
+            LIGHTNING_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/lightning.png")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    };
 }

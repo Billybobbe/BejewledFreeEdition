@@ -17,30 +17,45 @@ public class GraphicsObject {
 
     public static void draw(){
         for(Sprite sp : sprites){
-
-            float calculatedX = sp.getX()*2/(float)canvasX-1;
-            float calculatedY = sp.getY()*2/(float)canvasY-1;
-            float calculatedWidth = sp.getWidth()*2/(float)canvasX;
-            float calculatedHeight = sp.getHeight()*2/(float)canvasY;
-
-
-            glBindTexture(GL_TEXTURE_2D, sp.getTexture());
-            glBegin(GL_QUADS);
-
-            glTexCoord2f(1,1);
-            glVertex2d(calculatedX,calculatedY);
-
-            glTexCoord2f(0,1);
-            glVertex2d(calculatedX+calculatedWidth,calculatedY);
-
-            glTexCoord2f(0,0);
-            glVertex2d(calculatedX+calculatedWidth, calculatedY+calculatedHeight);
-
-            glTexCoord2f(1,0);
-            glVertex2d(calculatedX, calculatedY+calculatedHeight);
-
-            glEnd();
+            if(sp.getLayer() == 0){
+                drawSprite(sp);
+            }
         }
+        for(Sprite sp : sprites){
+            if(sp.getLayer() == 1){
+                drawSprite(sp);
+            }
+        }
+        for(Sprite sp : sprites){
+            if(sp.getLayer() == 2){
+                drawSprite(sp);
+            }
+        }
+    }
+    private static void drawSprite(Sprite sp){
+        float calculatedX = sp.getX()*2/(float)canvasX-1;
+        float calculatedY = sp.getY()*2/(float)canvasY-1;
+        float calculatedWidth = sp.getWidth()*2/(float)canvasX;
+        float calculatedHeight = sp.getHeight()*2/(float)canvasY;
+
+
+        glBindTexture(GL_TEXTURE_2D, sp.getTexture());
+        glBegin(GL_QUADS);
+
+        glTexCoord2f(1,1);
+        glVertex2d(calculatedX,calculatedY);
+
+        glTexCoord2f(0,1);
+        glVertex2d(calculatedX+calculatedWidth,calculatedY);
+
+        glTexCoord2f(0,0);
+        glVertex2d(calculatedX+calculatedWidth, calculatedY+calculatedHeight);
+
+        glTexCoord2f(1,0);
+        glVertex2d(calculatedX, calculatedY+calculatedHeight);
+
+        glEnd();
+
     }
 
     public static int toTexture(BufferedImage img) {

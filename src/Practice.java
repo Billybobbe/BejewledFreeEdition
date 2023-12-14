@@ -21,6 +21,7 @@ public class Practice {
     private static double mouseX;
     private static double mouseY;
     private static Board b;
+    private static GameHandler g;
 
     public static void main(String[] args) {
         glfwInit();
@@ -40,7 +41,19 @@ public class Practice {
                 userClosed.set(true);
             }
             if(key == GLFW_KEY_1 && action == GLFW_RELEASE){
-                b.randomDelete();
+                b.update();
+            }
+            if(key == GLFW_KEY_A && action == GLFW_RELEASE){
+                g.move(0);
+            }
+            if(key == GLFW_KEY_D && action == GLFW_RELEASE){
+                g.move(1);
+            }
+            if(key == GLFW_KEY_W && action == GLFW_RELEASE){
+                g.move(2);
+            }
+            if(key == GLFW_KEY_S && action == GLFW_RELEASE){
+                g.move(3);
             }
         });
 
@@ -48,7 +61,7 @@ public class Practice {
 
         b  = new Board();
         b.print();
-        GameHandler g = new GameHandler(b);
+        g = new GameHandler(b);
 
         while(!userClosed.get()){
 
@@ -57,17 +70,22 @@ public class Practice {
 
             glfwSwapBuffers(window);
             glfwPollEvents();
+            updateMousey(window);
             g.update();
             b.update();
-            b.print();
-            getMousey(window);
         }
     }
-    public static void getMousey(long w){
+    private static void updateMousey(long w){
         double[] x = new double[1];
         double[] y = new double[1];
         glfwGetCursorPos(w, x, y);
         mouseX = x[0];
         mouseY = 720-y[0];
+    }
+    public static int getMouseX(){
+        return (int)mouseX;
+    }
+    public static int getMouseY(){
+        return (int)mouseY;
     }
 }

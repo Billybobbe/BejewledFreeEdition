@@ -6,6 +6,7 @@ public class Sprite {
     private int width;
     private int height;
     private int texture;
+    private int layer;
 
     public Sprite(int x, int y, int width, int height, int texture){
         this.x = x;
@@ -13,6 +14,15 @@ public class Sprite {
         this.width = width;
         this.height = height;
         this.texture = texture;
+        this.layer = 1;
+    }
+    public Sprite(int x, int y, int width, int height, int texture, int layer){
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.texture = texture;
+        this.layer = layer;
     }
 
     public int getTexture(){
@@ -34,4 +44,7 @@ public class Sprite {
         return height;
     }
 
+    public int getLayer() {
+        return layer;
+    }
 }
