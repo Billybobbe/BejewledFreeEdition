@@ -41,7 +41,7 @@ public class Practice {
                 userClosed.set(true);
             }
             if(key == GLFW_KEY_1 && action == GLFW_RELEASE){
-                b.update();
+                b.print();
             }
             if(key == GLFW_KEY_A && action == GLFW_RELEASE){
                 g.move(0);

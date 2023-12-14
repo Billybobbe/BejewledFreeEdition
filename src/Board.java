@@ -28,9 +28,13 @@ public class Board {
 
 
     private Gem[][] board;
+    private GameHandler g;
     public Board(){
         board = new Gem[8][16];
         fillBoard();
+    }
+    public void setGameHandler(GameHandler g){
+        this.g = g;
     }
     private void fillBoard(){
         while(true){
@@ -111,25 +115,25 @@ public class Board {
         int matchVerticalDown = 0;
 
         for(int i = x-1; i>=0; i--){
-            if(!compareGem(g, board[i][y]) || Math.abs(board[i][y].shiftX)>0.1 || Math.abs(board[i][y].shiftY)>0.1 || board[i][y].size<1){
+            if(!compareGem(g, board[i][y]) || Math.abs(board[i][y].shiftX)>0.1 || Math.abs(board[i][y].shiftY)>0.1 || board[i][y].behavior!=Gem.Behavior.NOTHING){
                 break;
             }
             matchHorizontalLeft++;
         }
         for(int i = x+1; i<board.length; i++){
-            if(!compareGem(g, board[i][y]) || Math.abs(board[i][y].shiftX)>0.1 || Math.abs(board[i][y].shiftY)>0.1 || board[i][y].size<1){
+            if(!compareGem(g, board[i][y]) || Math.abs(board[i][y].shiftX)>0.1 || Math.abs(board[i][y].shiftY)>0.1 || board[i][y].behavior!=Gem.Behavior.NOTHING){
                 break;
             }
             matchHorizontalRight++;
         }
         for(int i = y-1; i>7; i--){
-            if(!compareGem(g, board[x][i]) || Math.abs(board[x][i].shiftX)>0.1 || Math.abs(board[x][i].shiftY)>0.1 || board[x][i].size<1){
+            if(!compareGem(g, board[x][i]) || Math.abs(board[x][i].shiftX)>0.1 || Math.abs(board[x][i].shiftY)>0.1 || board[x][i].behavior!=Gem.Behavior.NOTHING){
                 break;
             }
             matchVerticalDown++;
         }
         for(int i = y+1; i<board[0].length; i++){
-            if(!compareGem(g, board[x][i]) || Math.abs(board[x][i].shiftX)>0.1 || Math.abs(board[x][i].shiftY)>0.1 || board[x][i].size<1){
+            if(!compareGem(g, board[x][i]) || Math.abs(board[x][i].shiftX)>0.1 || Math.abs(board[x][i].shiftY)>0.1 || board[x][i].behavior!=Gem.Behavior.NOTHING){
                 break;
             }
             matchVerticalUp++;
@@ -144,9 +148,7 @@ public class Board {
         board[x][y].charge = c;
     }
     private void removeGem(int x, int y){
-        if(board[x][y].size == 1){
-            board[x][y].size = 0.9f;
-        }
+        board[x][y].behavior = Gem.Behavior.SHRINKING;
     }
     private void deleteGemsHorizontal(int x, int y, int left, int right) {
         for (int i = x - left; i <= x + right; i++) {
@@ -159,6 +161,22 @@ public class Board {
         for (int i = y - down; i <= y + up; i++) {
             if(i!=y){
                 removeGem(x, i);
+            }
+        }
+    }
+    private void combineGemsHorizontal(int x, int y, int left, int right) {
+        for (int i = x - left; i <= x + right; i++) {
+            if(i!=x){
+                g.addSlideGem(i, y, x, y, board[x][y].type);
+                board[i][y].behavior = Gem.Behavior.SLIDING;
+            }
+        }
+    }
+    private void combineGemsVertical(int x, int y, int up, int down) {
+        for (int i = y - down; i <= y + up; i++) {
+            if (i != y) {
+                g.addSlideGem(x, i, x, y, board[x][y].type);
+                board[x][i].behavior = Gem.Behavior.SLIDING;
             }
         }
     }
@@ -180,11 +198,11 @@ public class Board {
                                 if (horizontalLeftMatches + horizontalRightMatches >= 4 || verticalUpMatches + verticalDownMatches >= 4) {
                                     changeType(x, y, Gem.Type.S);
                                     if (horizontalLeftMatches + horizontalRightMatches >= 4) {
-                                        deleteGemsHorizontal(x, y, horizontalLeftMatches, horizontalRightMatches);
+                                        combineGemsHorizontal(x, y, horizontalLeftMatches, horizontalRightMatches);
                                     }
                                     else {
                                         for (int i = y - verticalDownMatches; i <= y + verticalUpMatches; i++) {
-                                            deleteGemsVertical(x, y, verticalUpMatches, verticalDownMatches);
+                                            combineGemsVertical(x, y, verticalUpMatches, verticalDownMatches);
                                         }
                                     }
                                 }
@@ -192,18 +210,18 @@ public class Board {
                             case 1:
                                 if (horizontalLeftMatches + horizontalRightMatches >= 2 && verticalUpMatches + verticalDownMatches >= 2){
                                     changeCharge(x, y, Gem.Charge.L);
-                                    deleteGemsHorizontal(x, y, horizontalLeftMatches, horizontalRightMatches);
-                                    deleteGemsVertical(x, y, verticalUpMatches, verticalDownMatches);
+                                    combineGemsHorizontal(x, y, horizontalLeftMatches, horizontalRightMatches);
+                                    combineGemsVertical(x, y, verticalUpMatches, verticalDownMatches);
                                 }
                                 break;
                             case 2:
                                 if (horizontalLeftMatches + horizontalRightMatches >= 3) {
                                     changeCharge(x, y, Gem.Charge.F);
-                                    deleteGemsHorizontal(x, y, horizontalLeftMatches, horizontalRightMatches);
+                                    combineGemsHorizontal(x, y, horizontalLeftMatches, horizontalRightMatches);
                                 }
                                 if (verticalUpMatches + verticalDownMatches >= 3) {
                                     changeCharge(x, y, Gem.Charge.F);
-                                    deleteGemsVertical(x, y, verticalUpMatches, verticalDownMatches);
+                                    combineGemsVertical(x, y, verticalUpMatches, verticalDownMatches);
                                 }
                                 break;
                             case 3:
@@ -221,6 +239,51 @@ public class Board {
             }
         }
     }
+    public void upgradeGem(int x, int y){
+        for(int type = 0; type<3; type++){
+            if (board[x][y] != null && Math.abs(board[x][y].shiftX) <= 0.1 && Math.abs(board[x][y].shiftY) <= 0.1) {
+
+                int[] totalMatches = getGemMatches(x, y);
+                int horizontalLeftMatches = totalMatches[0];
+                int horizontalRightMatches = totalMatches[1];
+                int verticalUpMatches = totalMatches[2];
+                int verticalDownMatches = totalMatches[3];
+
+                switch (type) {
+                    case 0:
+                        if (horizontalLeftMatches + horizontalRightMatches >= 4 || verticalUpMatches + verticalDownMatches >= 4) {
+                            changeType(x, y, Gem.Type.S);
+                            if (horizontalLeftMatches + horizontalRightMatches >= 4) {
+                                combineGemsHorizontal(x, y, horizontalLeftMatches, horizontalRightMatches);
+                            }
+                            else {
+                                for (int i = y - verticalDownMatches; i <= y + verticalUpMatches; i++) {
+                                    combineGemsVertical(x, y, verticalUpMatches, verticalDownMatches);
+                                }
+                            }
+                        }
+                        break;
+                    case 1:
+                        if (horizontalLeftMatches + horizontalRightMatches >= 2 && verticalUpMatches + verticalDownMatches >= 2){
+                            changeCharge(x, y, Gem.Charge.L);
+                            combineGemsHorizontal(x, y, horizontalLeftMatches, horizontalRightMatches);
+                            combineGemsVertical(x, y, verticalUpMatches, verticalDownMatches);
+                        }
+                        break;
+                    case 2:
+                        if (horizontalLeftMatches + horizontalRightMatches >= 3) {
+                            changeCharge(x, y, Gem.Charge.F);
+                            combineGemsHorizontal(x, y, horizontalLeftMatches, horizontalRightMatches);
+                        }
+                        if (verticalUpMatches + verticalDownMatches >= 3) {
+                            changeCharge(x, y, Gem.Charge.F);
+                            combineGemsVertical(x, y, verticalUpMatches, verticalDownMatches);
+                        }
+                        break;
+                }
+            }
+        }
+    }
     private boolean compareGem(Gem g1, Gem g2){
         if(g1 == null || g2 == null){
             return false;
@@ -230,7 +293,7 @@ public class Board {
     private void fall(){
         for(int x = 0; x<board.length; x++){
             for(int y = board[0].length-2; y>=0; y--){
-                if(board[x][y+1] == null && board[x][y]!= null){
+                if(board[x][y+1] == null && board[x][y]!= null && board[x][y].behavior == Gem.Behavior.NOTHING){
                     Gem temp = board[x][y];
                     board[x][y] = board[x][y+1];
                     board[x][y+1] = temp;

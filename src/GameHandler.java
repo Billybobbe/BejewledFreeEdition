@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 public class GameHandler {
     private ArrayList<Sprite>gemsDrawn;
+    private ArrayList<SlideGem>slideGemList;
     private Board board;
     private Gem[][] boardArr;
 
@@ -13,10 +14,35 @@ public class GameHandler {
     private int boxXSelected = -1;
     private int boxYSelected = -1;
 
+    public class SlideGem{
+        protected int initialX;
+        protected int initialY;
+        protected float currentX;
+        protected float currentY;
+        protected float speed;
+        protected int destX;
+        protected int destY;
+        protected Gem.Type type;
+        public SlideGem(int x, int y, int destX, int destY, Gem.Type t){
+            this.type = t;
+            this.initialX = x;
+            this.initialY = y;
+            this.currentX = x;
+            this.currentY = y;
+            this.destX = destX;
+            this.destY = destY;
+            this.speed = Math.abs(currentX-destX)+Math.abs(currentY-destY);
+        }
+    }
+
+
+
     public GameHandler(Board b){
         board = b;
+        b.setGameHandler(this);
         boardArr = board.getBoard();
         gemsDrawn = new ArrayList<>();
+        slideGemList = new ArrayList<>();
 
     }
     public void update(){
@@ -28,20 +54,24 @@ public class GameHandler {
         for(int x = 0; x< boardArr.length; x++){
             for(int y = 0; y< boardArr[0].length; y++){
                 Gem g = boardArr[x][y];
-                if(g!=null){
+                if(g!=null && g.behavior != Gem.Behavior.SLIDING){
                     if(g.shiftX>0.01){
                         g.shiftX -= 0.05;
+                        board.upgradeGem(x, y);
                     }
                     if(g.shiftX<0.01){
                         g.shiftX += 0.05;
+                        board.upgradeGem(x, y);
                     }
                     if(g.shiftY>0.01){
                         g.shiftY -= 0.05;
+                        board.upgradeGem(x, y);
                     }
                     if(g.shiftY<0.01){
                         g.shiftY += 0.05;
+                        board.upgradeGem(x, y);
                     }
-                    if(g.size<1){
+                    if(g.behavior== Gem.Behavior.SHRINKING){
                         g.size -= 0.01;
                         if(g.size<=0){
                             boardArr[x][y] = null;
@@ -63,20 +93,43 @@ public class GameHandler {
                             case F:
                                 effect.changeTexture(ResourceManager.FLAME_EFFECT);
                                 gemsDrawn.add(effect);
-                                GraphicsObject.addSprite(effect);
                                 break;
                             case L:
                                 effect.changeTexture(ResourceManager.LIGHTNING_EFFECT);
                                 gemsDrawn.add(effect);
-                                GraphicsObject.addSprite(effect);
                         }
                     }
                 }
             }
+        };
+        for(int i = 0; i<slideGemList.size(); i++){
+            SlideGem g = slideGemList.get(i);
+            if(g.currentX>g.destX){
+                g.currentX -= 0.01*g.speed;
+            }
+            if(g.currentX<g.destX){
+                g.currentX += 0.01*g.speed;
+            }
+            if(g.currentY>g.destY){
+                g.currentY -= 0.01*g.speed;
+            }
+            if(g.currentY<g.destY){
+                g.currentY += 0.01*g.speed;
+            }
+
+            if(Math.abs(g.currentX-g.destX)<0.05 && Math.abs(g.currentY-g.destY)<0.05){
+                slideGemList.remove(g);
+                boardArr[g.initialX][g.initialY] = null;
+                i--;
+            }
+            int[] coords = transformToCoords(g.currentX, g.currentY, 0.05f, 0.05f, 1);
+            Sprite sp = new Sprite(coords[0], coords[1], coords[2], coords[3], getTypeTexture(g.type));
+            gemsDrawn.add(sp);
+            GraphicsObject.addSprite(sp);
         }
     }
 
-    private static int[] transformToCoords(int x, int y, float xOffset, float yOffset, float sizeMultiplier){
+    private static int[] transformToCoords(float x, float y, float xOffset, float yOffset, float sizeMultiplier){
 
 
         int transformedX = (int)(shiftX + (space+sizeX)*(x+xOffset-sizeMultiplier/2f+1/2f));
@@ -85,19 +138,22 @@ public class GameHandler {
     }
     private Sprite genSprite(Gem g, int x, int y){
         int[] coords = transformToCoords(x, y, g.shiftX, g.shiftY, g.size);
-        switch(g.type){
+        return new Sprite(coords[0], coords[1], coords[2], coords[3], getTypeTexture(g.type));
+    }
+    private int getTypeTexture(Gem.Type t){
+        switch(t){
             case R:
-                return new Sprite(coords[0], coords[1], coords[2], coords[3], ResourceManager.RED_GEM);
+                return ResourceManager.RED_GEM;
             case G:
-                return new Sprite(coords[0], coords[1], coords[2], coords[3], ResourceManager.GREEN_GEM);
+                return ResourceManager.GREEN_GEM;
             case B:
-                return new Sprite(coords[0], coords[1], coords[2], coords[3], ResourceManager.BLUE_GEM);
+                return ResourceManager.BLUE_GEM;
             case O:
-                return new Sprite(coords[0], coords[1], coords[2], coords[3], ResourceManager.ORANGE_GEM);
+                return ResourceManager.ORANGE_GEM;
             case Y:
-                return new Sprite(coords[0], coords[1], coords[2], coords[3], ResourceManager.YELLOW_GEM);
+                return ResourceManager.YELLOW_GEM;
             default:
-                return new Sprite(coords[0], coords[1], coords[2], coords[3], ResourceManager.YELLOW_GEM);
+                return ResourceManager.YELLOW_GEM;
         }
     }
     public void selectBox(){
@@ -159,5 +215,8 @@ public class GameHandler {
                     break;
             }
         }
+    }
+    public void addSlideGem(int x, int y, int destX, int destY, Gem.Type t){
+        slideGemList.add(new SlideGem(x, y, destX, destY, t));
     }
 }
