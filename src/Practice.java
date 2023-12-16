@@ -31,6 +31,8 @@ public class Practice {
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
         glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glViewport(0, 0, 1280,720);
         glfwShowWindow(window);
 
@@ -63,6 +65,8 @@ public class Practice {
         b.print();
         g = new GameHandler(b);
 
+        GraphicsObject.addSprite(new Sprite(0, 0, 1280, 720, ResourceManager.BACKGROUND_IMAGE, 0)); //background image
+
         while(!userClosed.get()){
 
             glClear(GL_COLOR_BUFFER_BIT);
@@ -71,6 +75,7 @@ public class Practice {
             glfwSwapBuffers(window);
             glfwPollEvents();
             updateMousey(window);
+
             g.update();
             b.update();
         }

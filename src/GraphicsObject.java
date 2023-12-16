@@ -42,16 +42,16 @@ public class GraphicsObject {
         glBindTexture(GL_TEXTURE_2D, sp.getTexture());
         glBegin(GL_QUADS);
 
-        glTexCoord2f(1,1);
+        glTexCoord2f(0,1);
         glVertex2d(calculatedX,calculatedY);
 
-        glTexCoord2f(0,1);
+        glTexCoord2f(1,1);
         glVertex2d(calculatedX+calculatedWidth,calculatedY);
 
-        glTexCoord2f(0,0);
+        glTexCoord2f(1,0);
         glVertex2d(calculatedX+calculatedWidth, calculatedY+calculatedHeight);
 
-        glTexCoord2f(1,0);
+        glTexCoord2f(0,0);
         glVertex2d(calculatedX, calculatedY+calculatedHeight);
 
         glEnd();
@@ -59,7 +59,7 @@ public class GraphicsObject {
     }
 
     public static int toTexture(BufferedImage img) {
-        int[] pixels = new int[img.getWidth() * img.getHeight() * 4];
+        int[] pixels = new int[img.getWidth() * img.getHeight()];
         img.getRGB(0, 0, img.getWidth(), img.getHeight(), pixels, 0, img.getWidth());
         ByteBuffer buffer = BufferUtils.createByteBuffer(img.getWidth() * img.getHeight() * 4);
 

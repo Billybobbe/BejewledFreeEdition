@@ -241,7 +241,7 @@ public class Board {
     }
     public void upgradeGem(int x, int y){
         for(int type = 0; type<3; type++){
-            if (board[x][y] != null && Math.abs(board[x][y].shiftX) <= 0.1 && Math.abs(board[x][y].shiftY) <= 0.1) {
+            if (board[x][y] != null && Math.abs(board[x][y].shiftX) <= 0.1 && Math.abs(board[x][y].shiftY) <= 0.1 && y>7) {
 
                 int[] totalMatches = getGemMatches(x, y);
                 int horizontalLeftMatches = totalMatches[0];

@@ -8,7 +8,7 @@ public class ResourceManager {
 
     static {
         try {
-            RED_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/red.jpg")));
+            RED_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/red.png")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -17,7 +17,7 @@ public class ResourceManager {
 
     static {
         try {
-            GREEN_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/green.jpg")));
+            GREEN_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/green.png")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -26,7 +26,7 @@ public class ResourceManager {
 
     static {
         try {
-            BLUE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/blue.jpg")));
+            BLUE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/blue.png")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -35,7 +35,7 @@ public class ResourceManager {
 
     static {
         try {
-            ORANGE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/orange.jpg")));
+            ORANGE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/orange.png")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -44,7 +44,7 @@ public class ResourceManager {
 
     static {
         try {
-            YELLOW_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/yellow.jpg")));
+            YELLOW_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/yellow.png")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -63,6 +63,15 @@ public class ResourceManager {
     static {
         try {
             LIGHTNING_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/lightning.png")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    };
+    public static int BACKGROUND_IMAGE;
+
+    static {
+        try {
+            BACKGROUND_IMAGE = GraphicsObject.toTexture(ImageIO.read(new File("./res/background.jpg")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
