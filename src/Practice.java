@@ -1,5 +1,6 @@
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
+import org.lwjgl.system.CallbackI;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -65,19 +66,26 @@ public class Practice {
         b.print();
         g = new GameHandler(b);
 
+
         GraphicsObject.addSprite(new Sprite(0, 0, 1280, 720, ResourceManager.BACKGROUND_IMAGE, 0)); //background image
+        GraphicsObject.addSprite(new Sprite(640, 85, 600, 600, ResourceManager.BOARD_IMAGE, 1));
+        GraphicsObject.addSprite(new Sprite(615, 60, 650, 650, ResourceManager.BOARD_FRAME,2));
+
+        double oldSysTime = System.nanoTime()*0.000000001;
 
         while(!userClosed.get()){
-
-            glClear(GL_COLOR_BUFFER_BIT);
+            //glClear(GL_COLOR_BUFFER_BIT);
             GraphicsObject.draw();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
             updateMousey(window);
 
-            g.update();
-            b.update();
+            if(System.nanoTime()*0.000000001-oldSysTime>=0.01){
+                g.update();
+                b.update();
+                oldSysTime = System.nanoTime()*0.000000001;
+            }
         }
     }
     private static void updateMousey(long w){

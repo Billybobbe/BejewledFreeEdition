@@ -52,7 +52,7 @@ public class Board {
 
 
     private Gem genGem(){
-        int random = (int)(Math.random()*5);
+        int random = (int)(Math.random()*6);
         switch(random){
             case 0:
                 return new Gem(Gem.Type.R);
@@ -62,8 +62,10 @@ public class Board {
                 return new Gem(Gem.Type.B);
             case 3:
                 return new Gem(Gem.Type.O);
-            default:
+            case 4:
                 return new Gem(Gem.Type.Y);
+            default:
+                return new Gem(Gem.Type.P);
         }
     }
     private boolean checkBoardForMatches(){
@@ -115,25 +117,25 @@ public class Board {
         int matchVerticalDown = 0;
 
         for(int i = x-1; i>=0; i--){
-            if(!compareGem(g, board[i][y]) || Math.abs(board[i][y].shiftX)>0.1 || Math.abs(board[i][y].shiftY)>0.1 || board[i][y].behavior!=Gem.Behavior.NOTHING){
+            if(!compareGem(g, board[i][y]) || Math.abs(board[i][y].shiftX)>0.01 || Math.abs(board[i][y].shiftY)>0.01 || board[i][y].behavior!=Gem.Behavior.NOTHING){
                 break;
             }
             matchHorizontalLeft++;
         }
         for(int i = x+1; i<board.length; i++){
-            if(!compareGem(g, board[i][y]) || Math.abs(board[i][y].shiftX)>0.1 || Math.abs(board[i][y].shiftY)>0.1 || board[i][y].behavior!=Gem.Behavior.NOTHING){
+            if(!compareGem(g, board[i][y]) || Math.abs(board[i][y].shiftX)>0.01 || Math.abs(board[i][y].shiftY)>0.01 || board[i][y].behavior!=Gem.Behavior.NOTHING){
                 break;
             }
             matchHorizontalRight++;
         }
         for(int i = y-1; i>7; i--){
-            if(!compareGem(g, board[x][i]) || Math.abs(board[x][i].shiftX)>0.1 || Math.abs(board[x][i].shiftY)>0.1 || board[x][i].behavior!=Gem.Behavior.NOTHING){
+            if(!compareGem(g, board[x][i]) || Math.abs(board[x][i].shiftX)>0.01 || Math.abs(board[x][i].shiftY)>0.01 || board[x][i].behavior!=Gem.Behavior.NOTHING){
                 break;
             }
             matchVerticalDown++;
         }
         for(int i = y+1; i<board[0].length; i++){
-            if(!compareGem(g, board[x][i]) || Math.abs(board[x][i].shiftX)>0.1 || Math.abs(board[x][i].shiftY)>0.1 || board[x][i].behavior!=Gem.Behavior.NOTHING){
+            if(!compareGem(g, board[x][i]) || Math.abs(board[x][i].shiftX)>0.01 || Math.abs(board[x][i].shiftY)>0.01 || board[x][i].behavior!=Gem.Behavior.NOTHING){
                 break;
             }
             matchVerticalUp++;
@@ -185,7 +187,7 @@ public class Board {
         for(int type = 0; type<4; type++){
             for(int x = 0; x<board.length; x++) {
                 for (int y = 8; y < board[0].length; y++) {
-                    if (board[x][y] != null && Math.abs(board[x][y].shiftX) <= 0.1 && Math.abs(board[x][y].shiftY) <= 0.1) {
+                    if (board[x][y] != null && Math.abs(board[x][y].shiftX) <= 0.01 && Math.abs(board[x][y].shiftY) <= 0.01) {
 
                         int[] totalMatches = getGemMatches(x, y);
                         int horizontalLeftMatches = totalMatches[0];
@@ -241,7 +243,7 @@ public class Board {
     }
     public void upgradeGem(int x, int y){
         for(int type = 0; type<3; type++){
-            if (board[x][y] != null && Math.abs(board[x][y].shiftX) <= 0.1 && Math.abs(board[x][y].shiftY) <= 0.1 && y>7) {
+            if (board[x][y] != null && Math.abs(board[x][y].shiftX) <= 0.01 && Math.abs(board[x][y].shiftY) <= 0.01 && y>7) {
 
                 int[] totalMatches = getGemMatches(x, y);
                 int horizontalLeftMatches = totalMatches[0];
@@ -339,6 +341,6 @@ public class Board {
     public void update(){
         fall();
         fillTopRow();
-        upgradeGems();
+        //upgradeGems();
     }
 }

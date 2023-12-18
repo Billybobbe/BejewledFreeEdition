@@ -1,3 +1,5 @@
+import org.lwjgl.system.CallbackI;
+
 import java.util.ArrayList;
 
 public class GameHandler {
@@ -13,6 +15,8 @@ public class GameHandler {
     private static final int sizeY = 70;
     private int boxXSelected = -1;
     private int boxYSelected = -1;
+    private static float slideSpeed = 0.02f;
+    private static float shrinkSpeed = 0.02f;
 
     public class SlideGem{
         protected int initialX;
@@ -56,23 +60,35 @@ public class GameHandler {
                 Gem g = boardArr[x][y];
                 if(g!=null && g.behavior != Gem.Behavior.SLIDING){
                     if(g.shiftX>0.01){
-                        g.shiftX -= 0.05;
-                        board.upgradeGem(x, y);
+                        g.shiftX -= 0.05f;
+                        if(Math.abs(g.shiftX)<=0.01){
+                            board.upgradeGem(x, y);
+                            board.upgradeGems();
+                        }
                     }
-                    if(g.shiftX<0.01){
-                        g.shiftX += 0.05;
-                        board.upgradeGem(x, y);
+                    if(g.shiftX<-0.01){
+                        g.shiftX += 0.05f;
+                        if(Math.abs(g.shiftX)<=0.01){
+                            board.upgradeGem(x, y);
+                            board.upgradeGems();
+                        }
                     }
                     if(g.shiftY>0.01){
-                        g.shiftY -= 0.05;
-                        board.upgradeGem(x, y);
+                        g.shiftY -= 0.05f;
+                        if(Math.abs(g.shiftY)<=0.01){
+                            board.upgradeGem(x, y);
+                            board.upgradeGems();
+                        }
                     }
-                    if(g.shiftY<0.01){
-                        g.shiftY += 0.05;
-                        board.upgradeGem(x, y);
+                    if(g.shiftY<-0.01){
+                        g.shiftY += 0.05f;
+                        if(Math.abs(g.shiftY)<=0.01){
+                            board.upgradeGem(x, y);
+                            board.upgradeGems();
+                        }
                     }
                     if(g.behavior== Gem.Behavior.SHRINKING){
-                        g.size -= 0.01;
+                        g.size -= shrinkSpeed;
                         if(g.size<=0){
                             boardArr[x][y] = null;
                         }
@@ -105,16 +121,16 @@ public class GameHandler {
         for(int i = 0; i<slideGemList.size(); i++){
             SlideGem g = slideGemList.get(i);
             if(g.currentX>g.destX){
-                g.currentX -= 0.01*g.speed;
+                g.currentX -= slideSpeed*g.speed;
             }
             if(g.currentX<g.destX){
-                g.currentX += 0.01*g.speed;
+                g.currentX += slideSpeed*g.speed;
             }
             if(g.currentY>g.destY){
-                g.currentY -= 0.01*g.speed;
+                g.currentY -= slideSpeed*g.speed;
             }
             if(g.currentY<g.destY){
-                g.currentY += 0.01*g.speed;
+                g.currentY += slideSpeed*g.speed;
             }
 
             if(Math.abs(g.currentX-g.destX)<0.05 && Math.abs(g.currentY-g.destY)<0.05){
@@ -122,7 +138,7 @@ public class GameHandler {
                 boardArr[g.initialX][g.initialY] = null;
                 i--;
             }
-            int[] coords = transformToCoords(g.currentX, g.currentY, 0.05f, 0.05f, 1);
+            int[] coords = transformToCoords(g.currentX, g.currentY, 0, 0, 1);
             Sprite sp = new Sprite(coords[0], coords[1], coords[2], coords[3], getTypeTexture(g.type));
             gemsDrawn.add(sp);
             GraphicsObject.addSprite(sp);
@@ -153,7 +169,7 @@ public class GameHandler {
             case Y:
                 return ResourceManager.YELLOW_GEM;
             default:
-                return ResourceManager.YELLOW_GEM;
+                return ResourceManager.PURPLE_GEM;
         }
     }
     public void selectBox(){
@@ -171,10 +187,10 @@ public class GameHandler {
     public void move(int direction){
         //left right up down
         selectBox();
-        if(boxXSelected >= 0 && boxXSelected < boardArr.length && boxYSelected >= 8 && boxYSelected < boardArr[0].length && Math.abs(boardArr[boxXSelected][boxYSelected].shiftX)<=0.1 && Math.abs(boardArr[boxXSelected][boxYSelected].shiftY)<=0.1){
+        if(boxXSelected >= 0 && boxXSelected < boardArr.length && boxYSelected >= 8 && boxYSelected < boardArr[0].length && Math.abs(boardArr[boxXSelected][boxYSelected].shiftX)<=0.1 && Math.abs(boardArr[boxXSelected][boxYSelected].shiftY)<=0.1 && boardArr[boxXSelected][boxYSelected].behavior == Gem.Behavior.NOTHING){
             switch(direction){
                 case 0:
-                    if(boxXSelected>0){
+                    if(boxXSelected>0 && Math.abs(boardArr[boxXSelected-1][boxYSelected].shiftX)<=0.1 && Math.abs(boardArr[boxXSelected-1][boxYSelected].shiftY)<=0.1 && boardArr[boxXSelected-1][boxYSelected].behavior == Gem.Behavior.NOTHING){
                         Gem temp = boardArr[boxXSelected][boxYSelected];
                         boardArr[boxXSelected][boxYSelected] = boardArr[boxXSelected-1][boxYSelected];
                         boardArr[boxXSelected-1][boxYSelected] = temp;
@@ -184,7 +200,7 @@ public class GameHandler {
                     }
                     break;
                 case 1:
-                    if(boxXSelected< boardArr.length-1) {
+                    if(boxXSelected< boardArr.length-1 && Math.abs(boardArr[boxXSelected+1][boxYSelected].shiftX)<=0.1 && Math.abs(boardArr[boxXSelected+1][boxYSelected].shiftY)<=0.1 && boardArr[boxXSelected+1][boxYSelected].behavior == Gem.Behavior.NOTHING) {
                         Gem temp = boardArr[boxXSelected][boxYSelected];
                         boardArr[boxXSelected][boxYSelected] = boardArr[boxXSelected + 1][boxYSelected];
                         boardArr[boxXSelected + 1][boxYSelected] = temp;
@@ -194,7 +210,7 @@ public class GameHandler {
                     }
                         break;
                 case 2:
-                    if(boxYSelected>8){
+                    if(boxYSelected>8 && Math.abs(boardArr[boxXSelected][boxYSelected-1].shiftX)<=0.1 && Math.abs(boardArr[boxXSelected][boxYSelected-1].shiftY)<=0.1 && boardArr[boxXSelected][boxYSelected-1].behavior == Gem.Behavior.NOTHING){
                         Gem temp = boardArr[boxXSelected][boxYSelected];
                         boardArr[boxXSelected][boxYSelected] = boardArr[boxXSelected][boxYSelected-1];
                         boardArr[boxXSelected][boxYSelected-1] = temp;
@@ -204,7 +220,7 @@ public class GameHandler {
                     }
                         break;
                 default:
-                    if(boxYSelected< boardArr[0].length-1){
+                    if(boxYSelected< boardArr[0].length-1 && Math.abs(boardArr[boxXSelected][boxYSelected+1].shiftX)<=0.1 && Math.abs(boardArr[boxXSelected][boxYSelected+1].shiftY)<=0.1 && boardArr[boxXSelected][boxYSelected+1].behavior == Gem.Behavior.NOTHING){
                         Gem temp = boardArr[boxXSelected][boxYSelected];
                         boardArr[boxXSelected][boxYSelected] = boardArr[boxXSelected][boxYSelected+1];
                         boardArr[boxXSelected][boxYSelected+1] = temp;

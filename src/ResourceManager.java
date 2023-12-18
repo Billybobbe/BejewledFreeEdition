@@ -49,6 +49,14 @@ public class ResourceManager {
             throw new RuntimeException(e);
         }
     };
+    public static int PURPLE_GEM;
+    static {
+        try {
+            PURPLE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/purple.png")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    };
     public static int FLAME_EFFECT;
 
     static {
@@ -72,6 +80,24 @@ public class ResourceManager {
     static {
         try {
             BACKGROUND_IMAGE = GraphicsObject.toTexture(ImageIO.read(new File("./res/background.jpg")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    };
+    public static int BOARD_IMAGE;
+
+    static {
+        try {
+            BOARD_IMAGE = GraphicsObject.toTexture(ImageIO.read(new File("./res/board.png")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    };
+    public static int BOARD_FRAME;
+
+    static {
+        try {
+            BOARD_FRAME = GraphicsObject.toTexture(ImageIO.read(new File("./res/frame.png")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

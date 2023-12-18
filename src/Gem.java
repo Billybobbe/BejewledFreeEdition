@@ -1,6 +1,6 @@
 public class Gem {
     public enum Type{
-        R, G, B, O, Y, S
+        R, G, B, O, Y, P, S
     }
     public enum Charge{
         N, F, L

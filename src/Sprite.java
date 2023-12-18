@@ -14,7 +14,7 @@ public class Sprite {
         this.width = width;
         this.height = height;
         this.texture = texture;
-        this.layer = 1;
+        this.layer = 3;
     }
     public Sprite(int x, int y, int width, int height, int texture, int layer){
         this.x = x;

@@ -11,24 +11,18 @@ import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 
 public class GraphicsObject {
 
-    private static int canvasX = 1280;
-    private static int canvasY = 720;
+    private static final int maxLayers = 10;
+
+    private static final int canvasX = 1280;
+    private static final int canvasY = 720;
     private static final HashSet<Sprite> sprites = new HashSet<>();
 
-    public static void draw(){
-        for(Sprite sp : sprites){
-            if(sp.getLayer() == 0){
-                drawSprite(sp);
-            }
-        }
-        for(Sprite sp : sprites){
-            if(sp.getLayer() == 1){
-                drawSprite(sp);
-            }
-        }
-        for(Sprite sp : sprites){
-            if(sp.getLayer() == 2){
-                drawSprite(sp);
+    public static void draw() {
+        for (int i = 0; i < maxLayers; i++) {
+            for (Sprite sp : sprites) {
+                if (sp.getLayer() == i) {
+                    drawSprite(sp);
+                }
             }
         }
     }
