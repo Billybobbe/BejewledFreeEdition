@@ -99,7 +99,7 @@ public class GameHandler {
                         gemsDrawn.add(sp);
                         GraphicsObject.addSprite(sp);
 
-                        int[] coords = transformToCoords(x, y, 0, 0, 1);
+                        int[] coords = transformToCoords(x, y, g.shiftX, g.shiftY, g.size);
                         int xPos = coords[0];
                         int yPos = coords[1];
                         int sizeX = coords[2];
@@ -109,10 +109,12 @@ public class GameHandler {
                             case F:
                                 effect.changeTexture(ResourceManager.FLAME_EFFECT);
                                 gemsDrawn.add(effect);
+                                GraphicsObject.addSprite(effect);
                                 break;
                             case L:
                                 effect.changeTexture(ResourceManager.LIGHTNING_EFFECT);
                                 gemsDrawn.add(effect);
+                                GraphicsObject.addSprite(effect);
                         }
                     }
                 }

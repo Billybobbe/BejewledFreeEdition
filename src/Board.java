@@ -70,7 +70,7 @@ public class Board {
     }
     private boolean checkBoardForMatches(){
         for(int x = 0; x < board.length; x++){
-            for(int y = 0; y < board[0].length; y++){
+            for(int y = 8; y < board[0].length; y++){
                 if(checkGemForMatches(x,y)){
                     return true;
                 }
@@ -150,7 +150,39 @@ public class Board {
         board[x][y].charge = c;
     }
     private void removeGem(int x, int y){
-        board[x][y].behavior = Gem.Behavior.SHRINKING;
+        if(board[x][y]!= null){
+            switch(board[x][y].charge){
+                case F:
+                    int left = x-1;
+                    int right = x+1;
+                    int top = y-1;
+                    int bottom = y+1;
+                    if(left<0){
+                        left = 0;
+                    }
+                    if(right>=board.length){
+                        right = board.length-1;
+                    }
+                    if(top<8){
+                        top = 8;
+                    }
+                    if(bottom>=board[0].length){
+                        bottom = board[0].length-1;
+                    }
+                    for(int i = left; i<=right; i++){
+                        for(int r = top; r<=bottom; r++){
+                            board[i][r] = null;
+                        }
+                    }
+                    break;
+
+                case L:
+
+                    break;
+                case N:
+                    board[x][y].behavior = Gem.Behavior.SHRINKING;
+            }
+        }
     }
     private void deleteGemsHorizontal(int x, int y, int left, int right) {
         for (int i = x - left; i <= x + right; i++) {
