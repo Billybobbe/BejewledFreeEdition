@@ -33,7 +33,7 @@ public class Practice {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-        window = glfwCreateWindow(1280, 720, "Test", NULL, NULL);
+        window = glfwCreateWindow(1280, 720, "Dejeweled", NULL, NULL);
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
         glEnable(GL_TEXTURE_2D);
