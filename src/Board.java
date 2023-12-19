@@ -36,6 +36,8 @@ public class Board {
     public void setGameHandler(GameHandler g){
         this.g = g;
     }
+
+    //fill it with gems
     private void fillBoard(){
         while(true){
             for(int x = 0; x<board.length; x++){
@@ -50,7 +52,7 @@ public class Board {
     }
 
 
-
+    //random gem generation
     private Gem genGem(){
         int random = (int)(Math.random()*6);
         switch(random){
@@ -68,6 +70,7 @@ public class Board {
                 return new Gem(Gem.Type.P);
         }
     }
+    //checks the entire board to see if there are any gems that could match
     private boolean checkBoardForMatches(){
         for(int x = 0; x < board.length; x++){
             for(int y = 8; y < board[0].length; y++){
@@ -78,6 +81,7 @@ public class Board {
         }
         return false;
     }
+    //check an individual gem for a match
     public boolean checkGemForMatches(int x, int y){
         Gem g = board[x][y];
         int checkSizeX = 1;
@@ -109,6 +113,7 @@ public class Board {
         return checkSizeX>=3||checkSizeY>=3;
 
     }
+    //returns the matches in different directions of a gem
     private int[] getGemMatches(int x, int y){
         Gem g = board[x][y];
         int matchHorizontalLeft = 0;
@@ -200,6 +205,7 @@ public class Board {
             }
         }
     }
+    //deletes all the gems in a row from start to end
     private void deleteGemsHorizontal(int x, int y, int left, int right) {
         for (int i = x - left; i <= x + right; i++) {
             if(i!=x){
@@ -207,6 +213,7 @@ public class Board {
             }
         }
     }
+    //deletes all the gems in a column from start to end
     private void deleteGemsVertical(int x, int y, int up, int down) {
         for (int i = y - down; i <= y + up; i++) {
             if(i!=y){
@@ -215,6 +222,7 @@ public class Board {
         }
 
     }
+    //makes the gems look like they are sliding
     private void combineGemsHorizontal(int x, int y, int left, int right) {
         for (int i = x - left; i <= x + right; i++) {
             if(i!=x && board[i][x]!=null){
@@ -242,7 +250,8 @@ public class Board {
             }
         }
     }
-
+    //actual matching logic here
+    //depending on the number of matches it can turn into a different gem
     public void upgradeGems(){
         for(int type = 0; type<4; type++){
             for(int x = 0; x<board.length; x++) {
@@ -303,6 +312,8 @@ public class Board {
             }
         }
     }
+    //like upgradegems but for a single gem
+    //excludes the 3 match as it can ovverride things
     public void upgradeGem(int x, int y){
         for(int type = 0; type<3; type++){
             if (board[x][y] != null && Math.abs(board[x][y].shiftX) <= 0.01 && Math.abs(board[x][y].shiftY) <= 0.01 && y>7) {
@@ -356,6 +367,7 @@ public class Board {
         }
         return g1.type == g2.type;
     }
+    //makes all the gems on the board fall down if they have an empty space beneath
     private void fall(){
         for(int x = 0; x<board.length; x++){
             for(int y = board[0].length-2; y>=0; y--){
@@ -375,6 +387,7 @@ public class Board {
             removeGem(randomx, randomy);
         }
     }
+    //print the board
     public void print(){
         System.out.println();
         for(int y = 0; y<board[0].length; y++){

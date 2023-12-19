@@ -17,6 +17,7 @@ public class GraphicsObject {
     private static final int canvasY = 720;
     private static final HashSet<Sprite> sprites = new HashSet<>();
 
+    //draw every sprite in the hashset
     public static void draw() {
         for (int i = 0; i < maxLayers; i++) {
             for (Sprite sp : sprites) {
@@ -27,12 +28,13 @@ public class GraphicsObject {
         }
     }
     private static void drawSprite(Sprite sp){
+        //convert pixels to float value between -1 and 1
         float calculatedX = sp.getX()*2/(float)canvasX-1;
         float calculatedY = sp.getY()*2/(float)canvasY-1;
         float calculatedWidth = sp.getWidth()*2/(float)canvasX;
         float calculatedHeight = sp.getHeight()*2/(float)canvasY;
 
-
+        //give verticies and texture mapping to those verticies
         glBindTexture(GL_TEXTURE_2D, sp.getTexture());
         glBegin(GL_QUADS);
 
@@ -52,6 +54,7 @@ public class GraphicsObject {
 
     }
 
+    //converts a bufferedimage to a texture, takes the buffer data from it and converts using bitwise
     public static int toTexture(BufferedImage img) {
         int[] pixels = new int[img.getWidth() * img.getHeight()];
         img.getRGB(0, 0, img.getWidth(), img.getHeight(), pixels, 0, img.getWidth());

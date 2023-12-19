@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class ResourceManager {
-
+    //just the loading of all my textures
     public static int RED_GEM;
 
     static {

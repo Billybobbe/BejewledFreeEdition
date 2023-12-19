@@ -10,15 +10,20 @@ public class GameHandler {
     private Board board;
     private Gem[][] boardArr;
 
+    //sizing and position info for the board and gems
     private static final int shiftX = 640;
     private static final int shiftY = 10;
     private static final int space = 5;
     private static final int sizeX = 70;
     private static final int sizeY = 70;
+
+    //what box the mouse is hovering over
     private int boxXSelected = -1;
     private int boxYSelected = -1;
     private static float slideSpeed = 0.02f;
     private static float shrinkSpeed = 0.02f;
+
+    //some classes for the specific object types needed in some of my arraylists
 
     public static class SlideGem{
         protected int initialX;
@@ -75,7 +80,7 @@ public class GameHandler {
     }
 
 
-
+//pass in board upon creation, initialize all the arraylists
     public GameHandler(Board b){
         board = b;
         b.setGameHandler(this);
@@ -86,16 +91,21 @@ public class GameHandler {
         zaps = new ArrayList<>();
 
     }
+    //go through each of the arraylists, add the sprites in there to the graphicsobject
+    //since the GraphicsObject keeps sprites they get removed and re-added every frame. (probably not the most efficient, I know)
     public void update(){
+        //remove the old ones
         while(spritesDrawn.size()>0){
             Sprite sp = spritesDrawn.get(0);
             spritesDrawn.remove(sp);
             GraphicsObject.deleteSprite(sp);
         }
+        //for all the gems on the board
         for(int x = 0; x< boardArr.length; x++){
             for(int y = 0; y< boardArr[0].length; y++){
                 Gem g = boardArr[x][y];
                 if(g!=null && g.behavior != Gem.Behavior.SLIDING){
+                    //adjust all the shifts on them, reduce the magnitude
                     if(g.shiftX>0.01){
                         g.shiftX -= 0.05f;
                         if(Math.abs(g.shiftX)<=0.01){
@@ -124,6 +134,7 @@ public class GameHandler {
                             board.upgradeGems();
                         }
                     }
+                    //if shrinking make the size smaller
                     if(g.behavior== Gem.Behavior.SHRINKING){
                         g.size -= shrinkSpeed;
                         if(g.size<=0){
@@ -132,6 +143,7 @@ public class GameHandler {
                     }
 
                     if(y>7){
+                        //add gems as sprites and any effects they have based on their charge
                         Sprite sp = genSprite(g, x, y);
                         spritesDrawn.add(sp);
                         GraphicsObject.addSprite(sp);
@@ -142,6 +154,7 @@ public class GameHandler {
                         int sizeX = coords[2];
                         int sizeY = coords[3];
                         Sprite effect = new Sprite(xPos, yPos, sizeX, sizeY, 0, 2);
+                        //if they have a charge we add it as an effect
                         switch(g.charge){
                             case F:
                                 effect.changeTexture(ResourceManager.FLAME_EFFECT);
@@ -157,6 +170,7 @@ public class GameHandler {
                 }
             }
         };
+        //update the sliding gems, these slide into the gem being combined
         for(int i = 0; i<slideGemList.size(); i++){
             SlideGem g = slideGemList.get(i);
             if(g.currentX>g.destX){
@@ -171,17 +185,19 @@ public class GameHandler {
             if(g.currentY<g.destY){
                 g.currentY += slideSpeed*g.speed;
             }
-
+            //if it's close enough to the destination we remove it
             if(Math.abs(g.currentX-g.destX)<0.05 && Math.abs(g.currentY-g.destY)<0.05){
                 slideGemList.remove(g);
                 boardArr[g.initialX][g.initialY] = null;
                 i--;
             }
+            //add the slidegems as sprites
             int[] coords = transformToCoords(g.currentX, g.currentY, 0, 0, 1);
             Sprite sp = new Sprite(coords[0], coords[1], coords[2], coords[3], getTypeTexture(g.type));
             spritesDrawn.add(sp);
             GraphicsObject.addSprite(sp);
         }
+        //explosions grow in size until they get big, then remove
         for(int i = 0; i<explosions.size(); i++){
             ExplosionPoint e = explosions.get(i);
             e.update();
@@ -194,6 +210,8 @@ public class GameHandler {
             spritesDrawn.add(sp);
             GraphicsObject.addSprite(sp);
         }
+        //the zaps from the lightning gems just stay on screen for a set period of time
+        //this gets diminished in the form of a counter
         for(int i = 0; i<zaps.size(); i++){
             ZapPoint z = zaps.get(i);
             z.update();
@@ -223,7 +241,7 @@ public class GameHandler {
             GraphicsObject.addSprite(sp);
         }
     }
-
+    //turns position on board into sprite coordinates
     private static int[] transformToCoords(float x, float y, float xOffset, float yOffset, float sizeMultiplier){
 
 
@@ -235,6 +253,7 @@ public class GameHandler {
         int[] coords = transformToCoords(x, y, g.shiftX, g.shiftY, g.size);
         return new Sprite(coords[0], coords[1], coords[2], coords[3], getTypeTexture(g.type));
     }
+    //return texture of gem
     private int getTypeTexture(Gem.Type t){
         switch(t){
             case R:
@@ -265,6 +284,8 @@ public class GameHandler {
     }
     public void move(int direction){
         //left right up down
+        //movement logic, if it won't match afterwards it can't move
+        //cases for what key is pressed, corresponds to the direction of movement.
         selectBox();
         if(boxXSelected >= 0 && boxXSelected < boardArr.length && boxYSelected >= 8 && boxYSelected < boardArr[0].length && boardArr[boxXSelected][boxYSelected]!=null && Math.abs(boardArr[boxXSelected][boxYSelected].shiftX)<=0.1 && Math.abs(boardArr[boxXSelected][boxYSelected].shiftY)<=0.1 && boardArr[boxXSelected][boxYSelected].behavior == Gem.Behavior.NOTHING){
             switch(direction){
@@ -340,6 +361,7 @@ public class GameHandler {
             }
         }
     }
+    //methods for adding to the arraylists
     public void addSlideGem(int x, int y, int destX, int destY, Gem.Type t){
         slideGemList.add(new SlideGem(x, y, destX, destY, t));
     }
