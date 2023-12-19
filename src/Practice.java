@@ -24,6 +24,9 @@ public class Practice {
     private static Board b;
     private static GameHandler g;
 
+    public static final boolean moreOptimizedTextures = true;
+
+
     public static void main(String[] args) {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);

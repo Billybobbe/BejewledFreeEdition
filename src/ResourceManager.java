@@ -10,7 +10,12 @@ public class ResourceManager {
 
     static {
         try {
-            RED_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/red.png")));
+            if(Practice.moreOptimizedTextures){
+                RED_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/red_low.png")));
+            }
+            else{
+                RED_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/red.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -19,7 +24,12 @@ public class ResourceManager {
 
     static {
         try {
-            GREEN_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/green.png")));
+            if(Practice.moreOptimizedTextures){
+                GREEN_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/green_low.png")));
+            }
+            else{
+                GREEN_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/green.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -28,7 +38,12 @@ public class ResourceManager {
 
     static {
         try {
-            BLUE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/blue.png")));
+            if(Practice.moreOptimizedTextures){
+                BLUE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/blue_low.png")));
+            }
+            else{
+                BLUE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/blue.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -37,7 +52,12 @@ public class ResourceManager {
 
     static {
         try {
-            ORANGE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/orange.png")));
+            if(Practice.moreOptimizedTextures){
+                ORANGE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/orange_low.png")));
+            }
+            else{
+                ORANGE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/orange.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -46,7 +66,12 @@ public class ResourceManager {
 
     static {
         try {
-            YELLOW_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/yellow.png")));
+            if(Practice.moreOptimizedTextures){
+                YELLOW_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/yellow_low.png")));
+            }
+            else{
+                YELLOW_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/yellow.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -54,7 +79,12 @@ public class ResourceManager {
     public static int PURPLE_GEM;
     static {
         try {
-            PURPLE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/purple.png")));
+            if(Practice.moreOptimizedTextures){
+                PURPLE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/purple_low.png")));
+            }
+            else{
+                PURPLE_GEM = GraphicsObject.toTexture(ImageIO.read(new File("./res/purple.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -63,7 +93,12 @@ public class ResourceManager {
 
     static {
         try {
-            FLAME_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/flame.png")));
+            if(Practice.moreOptimizedTextures){
+                FLAME_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/flame_low.png")));
+            }
+            else{
+                FLAME_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/flame.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -72,7 +107,12 @@ public class ResourceManager {
 
     static {
         try {
-            LIGHTNING_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/lightning.png")));
+            if(Practice.moreOptimizedTextures){
+                LIGHTNING_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/lightning_low.png")));
+            }
+            else{
+                LIGHTNING_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/lightning.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -81,7 +121,12 @@ public class ResourceManager {
 
     static {
         try {
-            EXPLOSION_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/explosion.png")));
+            if(Practice.moreOptimizedTextures){
+                EXPLOSION_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/explosion_low.png")));
+            }
+            else{
+                EXPLOSION_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/explosion.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -90,7 +135,13 @@ public class ResourceManager {
 
     static {
         try {
-            ZAP_CENTER = GraphicsObject.toTexture(ImageIO.read(new File("./res/zapCenter.png")));
+
+            if(Practice.moreOptimizedTextures){
+                ZAP_CENTER = GraphicsObject.toTexture(ImageIO.read(new File("./res/zapCenter_low.png")));
+            }
+            else{
+                ZAP_CENTER = GraphicsObject.toTexture(ImageIO.read(new File("./res/zapCenter.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -99,7 +150,12 @@ public class ResourceManager {
 
     static {
         try {
-            ZAP_HORIZONTAL = GraphicsObject.toTexture(ImageIO.read(new File("./res/zapHorizontal.png")));
+            if(Practice.moreOptimizedTextures){
+                ZAP_HORIZONTAL = GraphicsObject.toTexture(ImageIO.read(new File("./res/zapHorizontal_low.png")));
+            }
+            else{
+                ZAP_HORIZONTAL = GraphicsObject.toTexture(ImageIO.read(new File("./res/zapHorizontal.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -108,7 +164,12 @@ public class ResourceManager {
 
     static {
         try {
-            ZAP_VERTICAL = GraphicsObject.toTexture(ImageIO.read(new File("./res/zapVertical.png")));
+            if(Practice.moreOptimizedTextures){
+                ZAP_VERTICAL = GraphicsObject.toTexture(ImageIO.read(new File("./res/zapVertical_low.png")));
+            }
+            else{
+                ZAP_VERTICAL = GraphicsObject.toTexture(ImageIO.read(new File("./res/zapVertical.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -117,7 +178,12 @@ public class ResourceManager {
 
     static {
         try {
-            BACKGROUND_IMAGE = GraphicsObject.toTexture(ImageIO.read(new File("./res/background.jpg")));
+            if(Practice.moreOptimizedTextures){
+                BACKGROUND_IMAGE = GraphicsObject.toTexture(ImageIO.read(new File("./res/background_low.jpg")));
+            }
+            else{
+                BACKGROUND_IMAGE = GraphicsObject.toTexture(ImageIO.read(new File("./res/background.jpg")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -135,7 +201,12 @@ public class ResourceManager {
 
     static {
         try {
-            BOARD_FRAME = GraphicsObject.toTexture(ImageIO.read(new File("./res/frame.png")));
+            if(Practice.moreOptimizedTextures){
+                BOARD_FRAME = GraphicsObject.toTexture(ImageIO.read(new File("./res/frame_low.png")));
+            }
+            else{
+                BOARD_FRAME = GraphicsObject.toTexture(ImageIO.read(new File("./res/frame.png")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
