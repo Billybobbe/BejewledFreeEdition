@@ -3,8 +3,10 @@ import org.lwjgl.system.CallbackI;
 import java.util.ArrayList;
 
 public class GameHandler {
-    private ArrayList<Sprite>gemsDrawn;
+    private ArrayList<Sprite>spritesDrawn;
     private ArrayList<SlideGem>slideGemList;
+    private ArrayList<ExplosionPoint>explosions;
+    private ArrayList<ZapPoint>zaps;
     private Board board;
     private Gem[][] boardArr;
 
@@ -18,7 +20,7 @@ public class GameHandler {
     private static float slideSpeed = 0.02f;
     private static float shrinkSpeed = 0.02f;
 
-    public class SlideGem{
+    public static class SlideGem{
         protected int initialX;
         protected int initialY;
         protected float currentX;
@@ -38,6 +40,39 @@ public class GameHandler {
             this.speed = Math.abs(currentX-destX)+Math.abs(currentY-destY);
         }
     }
+    public static class ExplosionPoint{
+        protected int x;
+        protected int y;
+        protected float size = 0;
+        protected int maxSize = 5;
+        private static final float speed = 0.1f;
+        public ExplosionPoint(int x, int y){
+            this.x = x;
+            this.y = y;
+        }
+        public void update(){
+            size += speed;
+        }
+    }
+    public static class ZapPoint{
+        protected enum Place{
+            C, H, V
+        }
+        protected int x;
+        protected int y;
+        protected int timer = 100;
+        protected Place place;
+
+
+        public ZapPoint(int x, int y, Place place){
+            this.x = x;
+            this.y = y;
+            this.place = place;
+        }
+        public void update() {
+            timer--;
+        }
+    }
 
 
 
@@ -45,14 +80,16 @@ public class GameHandler {
         board = b;
         b.setGameHandler(this);
         boardArr = board.getBoard();
-        gemsDrawn = new ArrayList<>();
+        spritesDrawn = new ArrayList<>();
         slideGemList = new ArrayList<>();
+        explosions = new ArrayList<>();
+        zaps = new ArrayList<>();
 
     }
     public void update(){
-        while(gemsDrawn.size()>0){
-            Sprite sp = gemsDrawn.get(0);
-            gemsDrawn.remove(sp);
+        while(spritesDrawn.size()>0){
+            Sprite sp = spritesDrawn.get(0);
+            spritesDrawn.remove(sp);
             GraphicsObject.deleteSprite(sp);
         }
         for(int x = 0; x< boardArr.length; x++){
@@ -96,7 +133,7 @@ public class GameHandler {
 
                     if(y>7){
                         Sprite sp = genSprite(g, x, y);
-                        gemsDrawn.add(sp);
+                        spritesDrawn.add(sp);
                         GraphicsObject.addSprite(sp);
 
                         int[] coords = transformToCoords(x, y, g.shiftX, g.shiftY, g.size);
@@ -108,12 +145,12 @@ public class GameHandler {
                         switch(g.charge){
                             case F:
                                 effect.changeTexture(ResourceManager.FLAME_EFFECT);
-                                gemsDrawn.add(effect);
+                                spritesDrawn.add(effect);
                                 GraphicsObject.addSprite(effect);
                                 break;
                             case L:
                                 effect.changeTexture(ResourceManager.LIGHTNING_EFFECT);
-                                gemsDrawn.add(effect);
+                                spritesDrawn.add(effect);
                                 GraphicsObject.addSprite(effect);
                         }
                     }
@@ -142,7 +179,47 @@ public class GameHandler {
             }
             int[] coords = transformToCoords(g.currentX, g.currentY, 0, 0, 1);
             Sprite sp = new Sprite(coords[0], coords[1], coords[2], coords[3], getTypeTexture(g.type));
-            gemsDrawn.add(sp);
+            spritesDrawn.add(sp);
+            GraphicsObject.addSprite(sp);
+        }
+        for(int i = 0; i<explosions.size(); i++){
+            ExplosionPoint e = explosions.get(i);
+            e.update();
+            if(e.size>= e.maxSize){
+                explosions.remove(e);
+                i--;
+            }
+            int[] coords = transformToCoords(e.x, e.y, 0, 0, e.size);
+            Sprite sp  = new Sprite(coords[0],coords[1],coords[2],coords[3],ResourceManager.EXPLOSION_EFFECT, 4);
+            spritesDrawn.add(sp);
+            GraphicsObject.addSprite(sp);
+        }
+        for(int i = 0; i<zaps.size(); i++){
+            ZapPoint z = zaps.get(i);
+            z.update();
+            if(z.timer<=0){
+                zaps.remove(z);
+                if(boardArr[z.x][z.y]!=null && boardArr[z.x][z.y].charge!= Gem.Charge.N){
+                    board.removeGem(z.x, z.y);
+                }
+                else{
+                    boardArr[z.x][z.y]=null;
+                }
+                i--;
+            }
+            int[] coords = transformToCoords(z.x, z.y, 0, 0, 1);
+            Sprite sp = new Sprite(coords[0],coords[1],coords[2],coords[3],0);
+            switch (z.place){
+                case C:
+                    sp.changeTexture(ResourceManager.ZAP_CENTER);
+                    break;
+                case H:
+                    sp.changeTexture(ResourceManager.ZAP_HORIZONTAL);
+                    break;
+                case V:
+                    sp.changeTexture(ResourceManager.ZAP_VERTICAL);
+            }
+            spritesDrawn.add(sp);
             GraphicsObject.addSprite(sp);
         }
     }
@@ -152,7 +229,7 @@ public class GameHandler {
 
         int transformedX = (int)(shiftX + (space+sizeX)*(x+xOffset-sizeMultiplier/2f+1/2f));
         int transformedY = (int)(shiftY + (space+sizeY)*(8-y+8+yOffset-sizeMultiplier/2f+1/2f));
-        return new int[]{transformedX, transformedY, (int)(sizeX*sizeMultiplier), (int)(sizeY*sizeMultiplier)};
+        return new int[]{transformedX, transformedY, (int)(sizeX*sizeMultiplier+5), (int)(sizeY*sizeMultiplier+5)}; //this makes it line up properly since there is spacing
     }
     private Sprite genSprite(Gem g, int x, int y){
         int[] coords = transformToCoords(x, y, g.shiftX, g.shiftY, g.size);
@@ -189,16 +266,23 @@ public class GameHandler {
     public void move(int direction){
         //left right up down
         selectBox();
-        if(boxXSelected >= 0 && boxXSelected < boardArr.length && boxYSelected >= 8 && boxYSelected < boardArr[0].length && Math.abs(boardArr[boxXSelected][boxYSelected].shiftX)<=0.1 && Math.abs(boardArr[boxXSelected][boxYSelected].shiftY)<=0.1 && boardArr[boxXSelected][boxYSelected].behavior == Gem.Behavior.NOTHING){
+        if(boxXSelected >= 0 && boxXSelected < boardArr.length && boxYSelected >= 8 && boxYSelected < boardArr[0].length && boardArr[boxXSelected][boxYSelected]!=null && Math.abs(boardArr[boxXSelected][boxYSelected].shiftX)<=0.1 && Math.abs(boardArr[boxXSelected][boxYSelected].shiftY)<=0.1 && boardArr[boxXSelected][boxYSelected].behavior == Gem.Behavior.NOTHING){
             switch(direction){
                 case 0:
                     if(boxXSelected>0 && Math.abs(boardArr[boxXSelected-1][boxYSelected].shiftX)<=0.1 && Math.abs(boardArr[boxXSelected-1][boxYSelected].shiftY)<=0.1 && boardArr[boxXSelected-1][boxYSelected].behavior == Gem.Behavior.NOTHING){
                         Gem temp = boardArr[boxXSelected][boxYSelected];
                         boardArr[boxXSelected][boxYSelected] = boardArr[boxXSelected-1][boxYSelected];
                         boardArr[boxXSelected-1][boxYSelected] = temp;
+                        if(board.checkGemForMatches(boxXSelected, boxYSelected)||board.checkGemForMatches(boxXSelected-1, boxYSelected)){
+                            boardArr[boxXSelected-1][boxYSelected].shiftX += 1;
+                            boardArr[boxXSelected][boxYSelected].shiftX -= 1;
+                        }
+                        else{
+                            temp = boardArr[boxXSelected][boxYSelected];
+                            boardArr[boxXSelected][boxYSelected] = boardArr[boxXSelected-1][boxYSelected];
+                            boardArr[boxXSelected-1][boxYSelected] = temp;
+                        }
 
-                        boardArr[boxXSelected-1][boxYSelected].shiftX += 1;
-                        boardArr[boxXSelected][boxYSelected].shiftX -= 1;
                     }
                     break;
                 case 1:
@@ -206,9 +290,17 @@ public class GameHandler {
                         Gem temp = boardArr[boxXSelected][boxYSelected];
                         boardArr[boxXSelected][boxYSelected] = boardArr[boxXSelected + 1][boxYSelected];
                         boardArr[boxXSelected + 1][boxYSelected] = temp;
+                        if(board.checkGemForMatches(boxXSelected, boxYSelected)||board.checkGemForMatches(boxXSelected+1, boxYSelected)){
+                            boardArr[boxXSelected + 1][boxYSelected].shiftX -= 1;
+                            boardArr[boxXSelected][boxYSelected].shiftX += 1;
+                        }
+                        else{
+                            temp = boardArr[boxXSelected][boxYSelected];
+                            boardArr[boxXSelected][boxYSelected] = boardArr[boxXSelected + 1][boxYSelected];
+                            boardArr[boxXSelected + 1][boxYSelected] = temp;
+                        }
 
-                        boardArr[boxXSelected + 1][boxYSelected].shiftX -= 1;
-                        boardArr[boxXSelected][boxYSelected].shiftX += 1;
+
                     }
                         break;
                 case 2:
@@ -216,9 +308,16 @@ public class GameHandler {
                         Gem temp = boardArr[boxXSelected][boxYSelected];
                         boardArr[boxXSelected][boxYSelected] = boardArr[boxXSelected][boxYSelected-1];
                         boardArr[boxXSelected][boxYSelected-1] = temp;
+                        if(board.checkGemForMatches(boxXSelected, boxYSelected)||board.checkGemForMatches(boxXSelected, boxYSelected-1)){
+                            boardArr[boxXSelected][boxYSelected-1].shiftY -= 1;
+                            boardArr[boxXSelected][boxYSelected].shiftY += 1;
+                        }
+                        else{
+                            temp = boardArr[boxXSelected][boxYSelected];
+                            boardArr[boxXSelected][boxYSelected] = boardArr[boxXSelected][boxYSelected-1];
+                            boardArr[boxXSelected][boxYSelected-1] = temp;
+                        }
 
-                        boardArr[boxXSelected][boxYSelected-1].shiftY -= 1;
-                        boardArr[boxXSelected][boxYSelected].shiftY += 1;
                     }
                         break;
                 default:
@@ -226,9 +325,16 @@ public class GameHandler {
                         Gem temp = boardArr[boxXSelected][boxYSelected];
                         boardArr[boxXSelected][boxYSelected] = boardArr[boxXSelected][boxYSelected+1];
                         boardArr[boxXSelected][boxYSelected+1] = temp;
+                        if(board.checkGemForMatches(boxXSelected, boxYSelected)||board.checkGemForMatches(boxXSelected, boxYSelected+1)){
+                            boardArr[boxXSelected][boxYSelected+1].shiftY += 1;
+                            boardArr[boxXSelected][boxYSelected].shiftY -= 1;
+                        }
+                        else{
+                            temp = boardArr[boxXSelected][boxYSelected];
+                            boardArr[boxXSelected][boxYSelected] = boardArr[boxXSelected][boxYSelected+1];
+                            boardArr[boxXSelected][boxYSelected+1] = temp;
+                        }
 
-                        boardArr[boxXSelected][boxYSelected+1].shiftY += 1;
-                        boardArr[boxXSelected][boxYSelected].shiftY -= 1;
                     }
                     break;
             }
@@ -236,5 +342,17 @@ public class GameHandler {
     }
     public void addSlideGem(int x, int y, int destX, int destY, Gem.Type t){
         slideGemList.add(new SlideGem(x, y, destX, destY, t));
+    }
+    public void addExplosion(int x, int y){
+        ExplosionPoint e = new ExplosionPoint(x,y);
+        explosions.add(e);
+    }
+    public void addZapPoint(int x, int y, ZapPoint.Place p){
+        ZapPoint z = new ZapPoint(x, y, p);
+        zaps.add(z);
+    }
+    public void setChargelightning(){
+        selectBox();
+        boardArr[boxXSelected][boxYSelected].charge = Gem.Charge.L;
     }
 }

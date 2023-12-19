@@ -44,7 +44,7 @@ public class Practice {
                 userClosed.set(true);
             }
             if(key == GLFW_KEY_1 && action == GLFW_RELEASE){
-                b.print();
+                g.setChargelightning();
             }
             if(key == GLFW_KEY_A && action == GLFW_RELEASE){
                 g.move(0);
@@ -68,7 +68,7 @@ public class Practice {
 
         GraphicsObject.addSprite(new Sprite(0, 0, 1280, 720, ResourceManager.BACKGROUND_IMAGE, 0)); //background image
         GraphicsObject.addSprite(new Sprite(640, 85, 600, 600, ResourceManager.BOARD_IMAGE, 1));
-        GraphicsObject.addSprite(new Sprite(615, 60, 650, 650, ResourceManager.BOARD_FRAME,2));
+        GraphicsObject.addSprite(new Sprite(609, 57, 659, 657, ResourceManager.BOARD_FRAME,1));
 
         double oldSysTime = System.nanoTime()*0.000000001;
 

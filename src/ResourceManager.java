@@ -1,3 +1,5 @@
+import org.lwjgl.system.CallbackI;
+
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +73,42 @@ public class ResourceManager {
     static {
         try {
             LIGHTNING_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/lightning.png")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    };
+    public static int EXPLOSION_EFFECT;
+
+    static {
+        try {
+            EXPLOSION_EFFECT = GraphicsObject.toTexture(ImageIO.read(new File("./res/explosion.png")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    };
+    public static int ZAP_CENTER;
+
+    static {
+        try {
+            ZAP_CENTER = GraphicsObject.toTexture(ImageIO.read(new File("./res/zapCenter.png")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    };
+    public static int ZAP_HORIZONTAL;
+
+    static {
+        try {
+            ZAP_HORIZONTAL = GraphicsObject.toTexture(ImageIO.read(new File("./res/zapHorizontal.png")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    };
+    public static int ZAP_VERTICAL;
+
+    static {
+        try {
+            ZAP_VERTICAL = GraphicsObject.toTexture(ImageIO.read(new File("./res/zapVertical.png")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
